@@ -14,19 +14,22 @@ def create_folder_list(folder_list, path = '/'):
         if not( os.path.exists(path + '/'+folder)):
             os.mkdir(path + '/'+folder)
 
+def create_tree_list(connection_ftp, folder_list):
+    for folder in folder_list:
+        browse_directory(connection_ftp,folder)
+        create_folder_list(list(map(lambda var: connection_ftp.pwd()+'/' + var, connection_ftp.nlst())), path)
+        browse_directory(connection_ftp,'..')
+
 def verify_nc(archive_list):
     contains_nc = list(filter(lambda x: '.nc' in x, folder_list))  # Faz uma lista com todos os arquivos.nc
     if not (len(contains_nc) == 0):  # se existe um arquivo nc, chegamos nas folhas dos diretorios
         return download_all_archives(connection_ftp)
 
-def download_all_archives(connection_ftp):
-    archives = connection_ftp.nlst() #pega lista com todos os arquivos
-    for archive in archives:
-        download_archive(connection_ftp, archive)
-    return (connection_ftp.cwd('..'))
-
 def browse_directory(connection_ftp, path):
     connection_ftp.cwd(path)
+
+def download_all_archives(connection_ftp):
+    pass
 
 
 
@@ -39,9 +42,4 @@ print('Informe um caminho para a raiz do diretorio')
 path = input()
 ftp,folder_list = conect_amrc()
 create_folder_list(folder_list,path + '/archive')
-for folder in folder_list:
-    print((folder))
-    browse_directory(ftp,folder)
-    print((ftp))
-    create_folder_list(ftp.nlst(), path)
-
+create_tree_list(ftp, folder_list)
