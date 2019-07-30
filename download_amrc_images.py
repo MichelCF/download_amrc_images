@@ -14,10 +14,11 @@ def create_folder_list(folder_list, path = '/'):
         if not( os.path.exists(path + '/'+folder)):
             os.mkdir(path + '/'+folder)
 
-def create_tree_list(connection_ftp, folder_list):
+def create_tree_list(connection_ftp, folder_list,path = '/'):
     for folder in folder_list:
         browse_directory(connection_ftp,folder)
         create_folder_list(list(map(lambda var: connection_ftp.pwd()+'/' + var, connection_ftp.nlst())), path)
+        download_all_archives(connection_ftp, path)
         browse_directory(connection_ftp,'..')
 
 def verify_nc(archive_list):
@@ -28,18 +29,18 @@ def verify_nc(archive_list):
 def browse_directory(connection_ftp, path):
     connection_ftp.cwd(path)
 
-def download_all_archives(connection_ftp):
-    pass
-
-
-
-def download_image(connection_ftp):
-    pass
+def download_all_archives(connection_ftp, path = '/'):
+    for folder in connection_ftp.nlst():
+        browse_directory(connection_ftp,folder)
+        for file in connection_ftp.nlst():
+            ftp.retrbinary("RETR " + file ,open(path +connection_ftp.pwd() +'/' + file, "wb").write)
+        browse_directory(connection_ftp, '..')
 
 
 #executando
 print('Informe um caminho para a raiz do diretorio')
 path = input()
+create_folder_list(['archive'],path)
 ftp,folder_list = conect_amrc()
 create_folder_list(folder_list,path + '/archive')
-create_tree_list(ftp, folder_list)
+create_tree_list(ftp,folder_list,path)
