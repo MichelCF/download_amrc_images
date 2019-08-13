@@ -18,7 +18,7 @@ def create_tree_list(connection_ftp, folder_list,path = '/'):
     for folder in folder_list:
         browse_directory(connection_ftp,folder)
         create_folder_list(list(map(lambda var: connection_ftp.pwd()+'/' + var, connection_ftp.nlst())), path)
-        download_all_archives(connection_ftp, path)
+        #download_all_archives(connection_ftp, path)
         browse_directory(connection_ftp,'..')
 
 def verify_nc(archive_list):
